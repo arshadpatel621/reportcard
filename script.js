@@ -3,7 +3,8 @@
 // Global configuration object
 let hallTicketConfig = {
     schoolName: "GLOBAL'S SANMARG PUBLIC SCHOOL BIDAR",
-    schoolSubtitle: "English Medium School With Shiksha-E-Hind and IIT Foundation Course", 
+    schoolSubtitle: "English Medium School With Shiksha-E-Hind and IIT Foundation Course",
+    schoolAddress: "Main Branch: Pansal Talleem  Bidar           Branch: Near City Palace", 
     examTitle: "Marks Card Annual Exam (2020-21)",
     maxMarks: 100,
     minMarks: 35,
@@ -301,7 +302,7 @@ function setupStepNavigation() {
 
 function setupConfigurationListeners() {
     // Listen for changes in configuration inputs
-    const configInputs = ['schoolName', 'schoolSubtitle', 'examTitle', 'batchMaxMarks', 'batchMinMarks'];
+    const configInputs = ['schoolName', 'schoolSubtitle', 'schoolAddress', 'examTitle', 'batchMaxMarks', 'batchMinMarks'];
     
     configInputs.forEach(id => {
         const element = document.getElementById(id);
@@ -323,12 +324,14 @@ function updateConfiguration() {
     // Update global configuration from inputs
     const schoolName = document.getElementById('schoolName');
     const schoolSubtitle = document.getElementById('schoolSubtitle');
+    const schoolAddress = document.getElementById('schoolAddress');
     const examTitle = document.getElementById('examTitle');
     const batchMaxMarks = document.getElementById('batchMaxMarks');
     const batchMinMarks = document.getElementById('batchMinMarks');
     
     if (schoolName) hallTicketConfig.schoolName = schoolName.value;
     if (schoolSubtitle) hallTicketConfig.schoolSubtitle = schoolSubtitle.value;
+    if (schoolAddress) hallTicketConfig.schoolAddress = schoolAddress.value;
     if (examTitle) hallTicketConfig.examTitle = examTitle.value;
     if (batchMaxMarks) hallTicketConfig.maxMarks = parseInt(batchMaxMarks.value) || 100;
     if (batchMinMarks) hallTicketConfig.minMarks = parseInt(batchMinMarks.value) || 35;
@@ -578,6 +581,7 @@ function generateHallTicketHTML(student, index) {
                     <div class="school-info">
                         <h1 class="school-name">${hallTicketConfig.schoolName}</h1>
                         <p class="school-subtitle">${hallTicketConfig.schoolSubtitle}</p>
+                        <p class="school-address">${hallTicketConfig.schoolAddress}</p>
                         <h2 class="exam-title">${hallTicketConfig.examTitle}</h2>
                     </div>
                 </div>
@@ -630,10 +634,6 @@ function generateHallTicketHTML(student, index) {
                                 <td><strong>${actualMinMarks}</strong></td>
                                 <td class="total-marks"><strong>${totalObtained}</strong></td>
                                 <td></td>
-                            </tr>
-                            <tr>
-                                <td><strong>Rank</strong></td>
-                                <td colspan="4"></td>
                             </tr>
                             <tr class="percentage-row">
                                 <td><strong>Percentage</strong></td>
@@ -821,7 +821,7 @@ function printHallTicket(index) {
                         align-items: center;
                         margin-bottom: 20px;
                         border-bottom: 2px solid #000;
-                        padding-bottom: 15px;
+                        padding-bottom: 5px;
                         position: relative;
                         z-index: 2;
                     }
@@ -845,8 +845,8 @@ function printHallTicket(index) {
                     .school-name {
                         font-size: 18px;
                         font-weight: bold;
-                        color: #000;
-                        margin: 0 0 5px 0;
+                        color: #000080;
+                        margin: 0;
                         text-transform: uppercase;
                     }
                     
@@ -854,13 +854,21 @@ function printHallTicket(index) {
                         font-size: 13px;
                         font-weight: bold;
                         color: #000;
-                        margin: 0 0 8px 0;
+                        margin: 0;
+                    }
+                    
+                    .school-address {
+                        font-size: 13px;
+                        font-weight: bold;
+                        color: #000;
+                        margin: 0 0 15px 0;
+                        white-space: pre;
                     }
                     
                     .exam-title {
                         font-size: 14px;
                         font-weight: bold;
-                        color: #000;
+                        color: #d00;
                         margin: 0;
                         text-transform: uppercase;
                     }
@@ -870,7 +878,6 @@ function printHallTicket(index) {
                         justify-content: space-between;
                         margin-bottom: 20px;
                         padding-bottom: 15px;
-                        border-bottom: 1px solid #000;
                         position: relative;
                         z-index: 2;
                     }
@@ -894,9 +901,10 @@ function printHallTicket(index) {
                     }
                     
                     .field-value {
-                        color: #d00;
+                        color: #000080;
                         font-weight: bold;
                         text-transform: uppercase;
+                        font-family: cursive;
                     }
                     
                     .marks-section {
@@ -947,7 +955,6 @@ function printHallTicket(index) {
                     
                     .co-scholastic {
                         margin: 20px 0;
-                        border-top: 1px solid #000;
                         padding-top: 15px;
                         position: relative;
                         z-index: 2;
@@ -981,9 +988,7 @@ function printHallTicket(index) {
                     .grade-options {
                         min-width: 120px;
                         text-align: center;
-                        border: 1px solid #ccc;
                         padding: 2px 5px;
-                        background-color: #fafafa;
                     }
                     
                     .school-timing-options {
@@ -1006,7 +1011,6 @@ function printHallTicket(index) {
                         justify-content: space-between;
                         margin-top: 30px;
                         padding-top: 20px;
-                        border-top: 1px solid #000;
                         position: relative;
                         z-index: 2;
                     }
@@ -1019,7 +1023,6 @@ function printHallTicket(index) {
                     
                     .signature-line {
                         height: 40px;
-                        border-top: 1px solid #000;
                         margin-bottom: 8px;
                     }
                     
@@ -1404,7 +1407,6 @@ function addSignaturesToPDF(pdf, x, y, width) {
     
     signatures.forEach((sig, index) => {
         const sigX = x + (index * sigWidth) + 20;
-        pdf.line(sigX, y - 10, sigX + 40, y - 10); // Signature line
         pdf.text(sig, sigX + 20, y, { align: 'center' });
     });
 }

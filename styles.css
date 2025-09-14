@@ -684,7 +684,7 @@ body {
     align-items: center;
     margin-bottom: 20px;
     border-bottom: 2px solid #000;
-    padding-bottom: 15px;
+    padding-bottom: 5px;
     position: relative;
     z-index: 2;
 }
@@ -708,8 +708,8 @@ body {
 .school-name {
     font-size: 18px;
     font-weight: bold;
-    color: #000;
-    margin: 0 0 5px 0;
+    color: #000080;
+    margin: 0;
     text-transform: uppercase;
 }
 
@@ -717,13 +717,21 @@ body {
     font-size: 13px;
     font-weight: bold;
     color: #000;
-    margin: 0 0 8px 0;
+    margin: 0;
+}
+
+.school-address {
+    font-size: 13px;
+    font-weight: bold;
+    color: #000;
+    margin: 0 0 15px 0;
+    white-space: pre;
 }
 
 .exam-title {
     font-size: 14px;
     font-weight: bold;
-    color: #000;
+    color: #d00;
     margin: 0;
     text-transform: uppercase;
 }
@@ -734,7 +742,6 @@ body {
     justify-content: space-between;
     margin-bottom: 20px;
     padding-bottom: 15px;
-    border-bottom: 1px solid #000;
     position: relative;
     z-index: 2;
 }
@@ -758,9 +765,10 @@ body {
 }
 
 .field-value {
-    color: #d00;
+    color: #000080;
     font-weight: bold;
     text-transform: uppercase;
+    font-family: cursive;
 }
 
 /* Marks Table */
@@ -835,7 +843,6 @@ body {
 /* Co-Scholastic Areas */
 .co-scholastic {
     margin: 20px 0;
-    border-top: 1px solid #000;
     padding-top: 15px;
     position: relative;
     z-index: 2;
@@ -869,9 +876,7 @@ body {
 .grade-options {
     min-width: 120px;
     text-align: center;
-    border: 1px solid #ccc;
     padding: 2px 5px;
-    background-color: #fafafa;
 }
 
 .school-timing-options {
@@ -895,7 +900,6 @@ body {
     justify-content: space-between;
     margin-top: 30px;
     padding-top: 20px;
-    border-top: 1px solid #000;
     position: relative;
     z-index: 2;
 }
@@ -908,7 +912,6 @@ body {
 
 .signature-line {
     height: 40px;
-    border-top: 1px solid #000;
     margin-bottom: 8px;
 }
 

@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hall Ticket Generator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Edu+NSW+ACT+Hand+Cursive:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
@@ -126,6 +129,10 @@
                     <div class="input-group">
                         <label for="schoolSubtitle">School Description</label>
                         <input type="text" id="schoolSubtitle" value="English Medium School With Shaba-E-Hifz and IIT Foundation Course">
+                    </div>
+                    <div class="input-group">
+                        <label for="schoolAddress">School Address</label>
+                        <input type="text" id="schoolAddress" value="Main Branch: Pansal Talleem  Bidar           Branch: Near City Palace">
                     </div>
                     <div class="input-group">
                         <label for="examTitle">Exam Title</label>
@@ -370,6 +377,7 @@
                     <div class="school-info">
                         <h1 class="school-name">GLOBAL'S SANMARG PUBLIC SCHOOL BIDAR</h1>
                         <p class="school-subtitle">English Medium School With Shiksha-E-Hind and IIT Foundation Course</p>
+                        <p class="school-address">Bidar, Karnataka, India</p>
                         <h2 class="exam-title">Marks Card Annual Exam (2020-21)</h2>
                     </div>
                 </div>
@@ -463,10 +471,6 @@
                                 <td><strong>210</strong></td>
                                 <td class="total-marks"><strong>396</strong></td>
                                 <td></td>
-                            </tr>
-                            <tr>
-                                <td><strong>Rank</strong></td>
-                                <td colspan="4"></td>
                             </tr>
                             <tr class="percentage-row">
                                 <td><strong>Percentage</strong></td>
