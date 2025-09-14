@@ -769,6 +769,9 @@ function printHallTicket(index) {
         <html>
             <head>
                 <title>Hall Ticket - Print</title>
+                <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+                <meta http-equiv="Pragma" content="no-cache">
+                <meta http-equiv="Expires" content="0">
                 <style>
                     * {
                         margin: 0;
@@ -783,7 +786,7 @@ function printHallTicket(index) {
                     }
                     
                     .hall-ticket {
-                        max-width: 800px;
+                        max-width: 900px;
                         margin: 0 auto;
                         background: white;
                         font-family: 'Times New Roman', Times, serif;
@@ -792,8 +795,8 @@ function printHallTicket(index) {
                     .diamond-border-frame {
                         position: relative;
                         background: white;
-                        margin: 10px;
-                        padding: 25px;
+                        margin: 20px;
+                        padding: 30px;
                         border: 3px solid #8B4513;
                         overflow: visible;
                         box-sizing: border-box;
@@ -807,6 +810,11 @@ function printHallTicket(index) {
                         transform: translate(-50%, -50%);
                         z-index: 1;
                         pointer-events: none;
+                        width: 450px;
+                        height: 450px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
                     }
                     
                     .watermark-logo {
@@ -814,36 +822,41 @@ function printHallTicket(index) {
                         height: 450px;
                         object-fit: contain;
                         opacity: 0.08;
+                        max-width: 100%;
+                        max-height: 100%;
+                        display: block;
                     }
                     
                     .hall-ticket-header {
                         display: flex;
                         align-items: center;
                         margin-bottom: 20px;
-                        border-bottom: 2px solid #000;
                         padding-bottom: 5px;
                         position: relative;
                         z-index: 2;
                     }
                     
                     .school-logo {
-                        margin-right: 20px;
+                        margin-right: 15px;
                     }
                     
                     .logo-img {
-                        width: 80px;
-                        height: 80px;
+                        width: 100px;
+                        height: 100px;
                         object-fit: contain;
                         padding: 5px;
+                        margin-left: 35px;
                     }
                     
                     .school-info {
-                        flex: 1;
+                        width: 600px;
                         text-align: center;
+                        margin: 0 auto;
+                        margin-left: -40px;
                     }
                     
                     .school-name {
-                        font-size: 18px;
+                        font-size: 20px;
                         font-weight: bold;
                         color: #000080;
                         margin: 0;
@@ -884,6 +897,10 @@ function printHallTicket(index) {
                     
                     .student-left, .student-right {
                         flex: 1;
+                    }
+                    
+                    .student-left {
+                        margin-right: 30px;
                     }
                     
                     .student-field {
@@ -928,9 +945,11 @@ function printHallTicket(index) {
                     }
                     
                     .marks-table th {
-                        background-color: #f5f5f5;
+                        background-color: #ffcccc;
                         font-weight: bold;
                         font-size: 10px;
+                        -webkit-print-color-adjust: exact;
+                        print-color-adjust: exact;
                     }
                     
                     .marks-table td:first-child {
@@ -939,9 +958,39 @@ function printHallTicket(index) {
                         background-color: #fafafa;
                     }
                     
-                    .total-row td {
-                        background-color: #f0f0f0;
+                    .marks-table .math-marks,
+                    .marks-table .science-marks,
+                    .marks-table .social-marks,
+                    .marks-table .english-marks,
+                    .marks-table .kannada-marks,
+                    .marks-table .hindi-marks,
+                    .marks-table .total-marks {
                         font-weight: bold;
+                    }
+                    
+                    /* Remark styling */
+                    .marks-table .math-remark,
+                    .marks-table .science-remark,
+                    .marks-table .social-remark,
+                    .marks-table .english-remark,
+                    .marks-table .kannada-remark,
+                    .marks-table .hindi-remark {
+                        color: #ff0000;
+                        font-weight: bold;
+                        font-size: 10px;
+                    }
+                    
+                    .total-row td {
+                        background-color: #ffcccc;
+                        font-weight: bold;
+                        -webkit-print-color-adjust: exact;
+                        print-color-adjust: exact;
+                    }
+                    
+                    .total-row td:first-child {
+                        background-color: #ffcccc;
+                        -webkit-print-color-adjust: exact;
+                        print-color-adjust: exact;
                     }
                     
                     .percentage-row td {
