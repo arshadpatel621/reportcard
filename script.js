@@ -17,10 +17,23 @@ let hallTicketConfig = {
     },
     // Auto-calculated properties
     get totalMaxMarks() {
-        return this.maxMarks * 6; // 6 subjects
+        const configuredSubjectsCount = this.getConfiguredSubjectsCount();
+        return this.maxMarks * configuredSubjectsCount;
     },
     get totalMinMarks() {
-        return this.minMarks * 6; // 6 subjects
+        const configuredSubjectsCount = this.getConfiguredSubjectsCount();
+        return this.minMarks * configuredSubjectsCount;
+    },
+    // Helper method to count configured subjects
+    getConfiguredSubjectsCount() {
+        let count = 0;
+        for (let i = 1; i <= 6; i++) {
+            const subjectName = this.subjects[`subject${i}`];
+            if (subjectName && subjectName.trim() !== '') {
+                count++;
+            }
+        }
+        return count > 0 ? count : 6; // Default to 6 if none configured
     }
 };
 
@@ -351,19 +364,28 @@ function updateBatchTotals() {
         const maxFormulaElement = document.getElementById('maxFormula');
         const minFormulaElement = document.getElementById('minFormula');
         
+        // Get configured subjects count
+        const configuredCount = hallTicketConfig.getConfiguredSubjectsCount();
+        
         if (totalMaxElement) {
-            totalMaxElement.textContent = maxValue * 6; // 6 subjects
+            totalMaxElement.textContent = maxValue * configuredCount;
         }
         if (totalMinElement) {
-            totalMinElement.textContent = minValue * 6; // 6 subjects
+            totalMinElement.textContent = minValue * configuredCount;
         }
         
         // Update formulas with current values
         if (maxFormulaElement) {
-            maxFormulaElement.textContent = `(${maxValue} × 6 subjects)`;
+            maxFormulaElement.textContent = `(${maxValue} × ${configuredCount} subjects)`;
         }
         if (minFormulaElement) {
-            minFormulaElement.textContent = `(${minValue} × 6 subjects)`;
+            minFormulaElement.textContent = `(${minValue} × ${configuredCount} subjects)`;
+        }
+        
+        // Update subjects count display
+        const subjectsInfo = document.querySelector('.subjects-info .subjects-count');
+        if (subjectsInfo) {
+            subjectsInfo.textContent = `📚 ${configuredCount} Subjects Total`;
         }
         
         console.log('Updated totals:', {
@@ -498,13 +520,47 @@ function filterReportCards() {
 }
 
 function generateHallTicketHTML(student, index) {
-    // Calculate totals and grade
-    const totalObtained = student.marks.mathematics + student.marks.science + 
-                         student.marks.social + student.marks.english + 
-                         student.marks.kannada + student.marks.hindi;
+    // Get configured subjects (only those with names)
+    const configuredSubjects = [];
+    const subjectMarks = {
+        subject1: student.marks.mathematics,
+        subject2: student.marks.science,
+        subject3: student.marks.social,
+        subject4: student.marks.english,
+        subject5: student.marks.kannada,
+        subject6: student.marks.hindi
+    };
     
-    const percentage = ((totalObtained / hallTicketConfig.totalMaxMarks) * 100).toFixed(1);
+    // Build array of configured subjects
+    for (let i = 1; i <= 6; i++) {
+        const subjectName = hallTicketConfig.subjects[`subject${i}`];
+        if (subjectName && subjectName.trim() !== '') {
+            configuredSubjects.push({
+                name: subjectName,
+                marks: subjectMarks[`subject${i}`],
+                className: ['math', 'science', 'social', 'english', 'kannada', 'hindi'][i-1]
+            });
+        }
+    }
+    
+    // Calculate totals based on configured subjects only
+    const totalObtained = configuredSubjects.reduce((sum, subject) => sum + (subject.marks || 0), 0);
+    const actualMaxMarks = configuredSubjects.length * hallTicketConfig.maxMarks;
+    const actualMinMarks = configuredSubjects.length * hallTicketConfig.minMarks;
+    
+    const percentage = actualMaxMarks > 0 ? ((totalObtained / actualMaxMarks) * 100).toFixed(1) : '0.0';
     const grade = getGrade(percentage);
+    
+    // Generate subject rows dynamically
+    const subjectRows = configuredSubjects.map(subject => `
+        <tr>
+            <td>${subject.name}</td>
+            <td>${hallTicketConfig.maxMarks}</td>
+            <td>${hallTicketConfig.minMarks}</td>
+            <td class="${subject.className}-marks">${subject.marks || 0}</td>
+            <td class="${subject.className}-remark">${getRemark(subject.marks || 0, hallTicketConfig.minMarks)}</td>
+        </tr>
+    `).join('');
     
     return `
         <div class="hall-ticket">
@@ -567,52 +623,11 @@ function generateHallTicketHTML(student, index) {
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>${hallTicketConfig.subjects.subject1}</td>
-                                <td>${hallTicketConfig.maxMarks}</td>
-                                <td>${hallTicketConfig.minMarks}</td>
-                                <td class="math-marks">${student.marks.mathematics}</td>
-                                <td class="math-remark">${getRemark(student.marks.mathematics, hallTicketConfig.minMarks)}</td>
-                            </tr>
-                            <tr>
-                                <td>${hallTicketConfig.subjects.subject2}</td>
-                                <td>${hallTicketConfig.maxMarks}</td>
-                                <td>${hallTicketConfig.minMarks}</td>
-                                <td class="science-marks">${student.marks.science}</td>
-                                <td class="science-remark">${getRemark(student.marks.science, hallTicketConfig.minMarks)}</td>
-                            </tr>
-                            <tr>
-                                <td>${hallTicketConfig.subjects.subject3}</td>
-                                <td>${hallTicketConfig.maxMarks}</td>
-                                <td>${hallTicketConfig.minMarks}</td>
-                                <td class="social-marks">${student.marks.social}</td>
-                                <td class="social-remark">${getRemark(student.marks.social, hallTicketConfig.minMarks)}</td>
-                            </tr>
-                            <tr>
-                                <td>${hallTicketConfig.subjects.subject4}</td>
-                                <td>${hallTicketConfig.maxMarks}</td>
-                                <td>${hallTicketConfig.minMarks}</td>
-                                <td class="english-marks">${student.marks.english}</td>
-                                <td class="english-remark">${getRemark(student.marks.english, hallTicketConfig.minMarks)}</td>
-                            </tr>
-                            <tr>
-                                <td>${hallTicketConfig.subjects.subject5}</td>
-                                <td>${hallTicketConfig.maxMarks}</td>
-                                <td>${hallTicketConfig.minMarks}</td>
-                                <td class="kannada-marks">${student.marks.kannada}</td>
-                                <td class="kannada-remark">${getRemark(student.marks.kannada, hallTicketConfig.minMarks)}</td>
-                            </tr>
-                            <tr>
-                                <td>${hallTicketConfig.subjects.subject6}</td>
-                                <td>${hallTicketConfig.maxMarks}</td>
-                                <td>${hallTicketConfig.minMarks}</td>
-                                <td class="hindi-marks">${student.marks.hindi}</td>
-                                <td class="hindi-remark">${getRemark(student.marks.hindi, hallTicketConfig.minMarks)}</td>
-                            </tr>
+                            ${subjectRows}
                             <tr class="total-row">
                                 <td><strong>Total</strong></td>
-                                <td><strong>${hallTicketConfig.totalMaxMarks}</strong></td>
-                                <td><strong>${hallTicketConfig.totalMinMarks}</strong></td>
+                                <td><strong>${actualMaxMarks}</strong></td>
+                                <td><strong>${actualMinMarks}</strong></td>
                                 <td class="total-marks"><strong>${totalObtained}</strong></td>
                                 <td></td>
                             </tr>
@@ -639,20 +654,24 @@ function generateHallTicketHTML(student, index) {
                     <h3>Co-Scholastic Areas</h3>
                     <div class="co-scholastic-grid">
                         <div class="co-item">
-                            <span>1. Discipline in the classroom</span>
+                            <span>1. Discipline in the classroom :</span>
                             <div class="grade-options">[ A / B / C ]</div>
                         </div>
                         <div class="co-item">
-                            <span>2. Behavior / Conduct with teachers & classmates</span>
+                            <span>2. Behavior / Conduct with teachers & classmates :</span>
                             <div class="grade-options">[ A / B / C ]</div>
                         </div>
                         <div class="co-item">
-                            <span>3. Regularity & Neatness in doing HW/CW</span>
+                            <span>3. Regularity & Neatness in doing HW/CW :</span>
                             <div class="grade-options">[ A / B / C ]</div>
                         </div>
                         <div class="co-item">
-                            <span>4. Comes to School: On time [ ] / Sometimes Late [ ] / Always Late [ ]</span>
-                            <div class="grade-options"></div>
+                            <span>4. Comes to School :</span>
+                            <div class="school-timing-options">
+                                <span class="timing-option">[ &nbsp; ] On time</span>
+                                <span class="timing-option">[ &nbsp; ] Sometimes Late</span>
+                                <span class="timing-option">[ &nbsp; ] Always Late</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -758,7 +777,7 @@ function printHallTicket(index) {
                     }
                     
                     body {
-                        font-family: Arial, sans-serif;
+                        font-family: 'Times New Roman', Times, serif;
                         background: white;
                         padding: 20px;
                     }
@@ -767,42 +786,17 @@ function printHallTicket(index) {
                         max-width: 800px;
                         margin: 0 auto;
                         background: white;
-                        font-family: Arial, sans-serif;
+                        font-family: 'Times New Roman', Times, serif;
                     }
                     
                     .diamond-border-frame {
                         position: relative;
                         background: white;
                         margin: 10px;
-                        padding: 20px;
-                        border: 3px solid #666;
-                    }
-                    
-                    .diamond-border-frame::before {
-                        content: '';
-                        position: absolute;
-                        top: -8px;
-                        left: -8px;
-                        right: -8px;
-                        bottom: -8px;
-                        background-image: 
-                            repeating-linear-gradient(
-                                45deg,
-                                #666 0px,
-                                #666 6px,
-                                white 6px,
-                                white 12px
-                            ),
-                            repeating-linear-gradient(
-                                -45deg,
-                                #666 0px,
-                                #666 6px,
-                                white 6px,
-                                white 12px
-                            );
-                        background-size: 16.97px 16.97px;
-                        z-index: -1;
-                        border: 2px solid #666;
+                        padding: 25px;
+                        border: 3px solid #8B4513;
+                        overflow: visible;
+                        box-sizing: border-box;
                     }
                     
                     /* Watermark Container */
@@ -840,7 +834,6 @@ function printHallTicket(index) {
                         width: 80px;
                         height: 80px;
                         object-fit: contain;
-                        border: 1px solid #ddd;
                         padding: 5px;
                     }
                     
@@ -858,7 +851,8 @@ function printHallTicket(index) {
                     }
                     
                     .school-subtitle {
-                        font-size: 11px;
+                        font-size: 13px;
+                        font-weight: bold;
                         color: #000;
                         margin: 0 0 8px 0;
                     }
@@ -992,6 +986,21 @@ function printHallTicket(index) {
                         background-color: #fafafa;
                     }
                     
+                    .school-timing-options {
+                        display: flex;
+                        gap: 15px;
+                        align-items: center;
+                        font-size: 11px;
+                        flex-wrap: wrap;
+                    }
+                    
+                    .timing-option {
+                        display: flex;
+                        align-items: center;
+                        gap: 3px;
+                        white-space: nowrap;
+                    }
+                    
                     .signatures {
                         display: flex;
                         justify-content: space-between;
@@ -1069,33 +1078,49 @@ function viewHallTicket(index) {
     const downloadSection = hallTicket.querySelector('.download-section');
     downloadSection.style.display = 'none';
     
-    // Configure PDF options for viewing
+    // Configure PDF options to match print dimensions exactly
     const opt = {
-        margin: [10, 10, 10, 10],
+        margin: [12.7, 12.7, 12.7, 12.7], // 0.5in margins like print
         filename: `HallTicket_${studentName}.pdf`,
-        image: { type: 'jpeg', quality: 0.95 },
+        image: { type: 'jpeg', quality: 0.98 },
         html2canvas: { 
-            scale: 2,
+            scale: 1.5,  // Increased for better quality
             useCORS: true,
+            allowTaint: true,
+            logging: false,
             letterRendering: true,
-            allowTaint: true
+            backgroundColor: '#ffffff',
+            scrollX: 0,
+            scrollY: 0,
+            width: 900,   // Match hall-ticket max-width from CSS
+            height: 1200, // Proper height for full content
+            x: 0,
+            y: 0
         },
         jsPDF: { 
             unit: 'mm', 
             format: 'a4', 
-            orientation: 'portrait' 
+            orientation: 'portrait',
+            putOnlyUsedFonts: true,
+            floatPrecision: 16
         }
     };
     
     // Generate PDF and open in new tab for viewing
-    html2pdf().from(hallTicket).set(opt).outputPdf('datauristring').then(function(pdfAsString) {
-        const newTab = window.open();
-        newTab.document.write(`
-            <iframe width='100%' height='100%' src='${pdfAsString}'></iframe>
-        `);
+    html2pdf().set(opt).from(hallTicket).toPdf().get('pdf').then(function (pdf) {
+        const totalPages = pdf.internal.getNumberOfPages();
+        for (let i = 1; i <= totalPages; i++) {
+            pdf.setPage(i);
+        }
+        
+        const blob = pdf.output('blob');
+        const url = URL.createObjectURL(blob);
+        const newTab = window.open(url, '_blank');
         newTab.document.title = `Hall Ticket - ${studentName}`;
+        
         downloadSection.style.display = 'flex';
-    }).catch(() => {
+    }).catch((error) => {
+        console.error('Error generating PDF preview:', error);
         alert('Error generating PDF preview. Please try downloading instead.');
         downloadSection.style.display = 'flex';
     });
@@ -1116,26 +1141,36 @@ function downloadHallTicket(index) {
     const downloadSection = hallTicket.querySelector('.download-section');
     downloadSection.style.display = 'none';
     
-    // Configure PDF options
+    // Configure PDF options to match print dimensions exactly
     const opt = {
-        margin: [10, 10, 10, 10],
+        margin: [12.7, 12.7, 12.7, 12.7], // 0.5in margins like print
         filename: `HallTicket_${studentName.replace(/\s+/g, '_')}_${rollNumber}.pdf`,
-        image: { type: 'jpeg', quality: 0.95 },
+        image: { type: 'jpeg', quality: 0.98 },
         html2canvas: { 
-            scale: 2,
+            scale: 1.5,  // Increased for better quality
             useCORS: true,
+            allowTaint: true,
+            logging: false,
             letterRendering: true,
-            allowTaint: true
+            backgroundColor: '#ffffff',
+            scrollX: 0,
+            scrollY: 0,
+            width: 900,   // Match hall-ticket max-width from CSS
+            height: 1200, // Proper height for full content
+            x: 0,
+            y: 0
         },
         jsPDF: { 
             unit: 'mm', 
             format: 'a4', 
-            orientation: 'portrait' 
+            orientation: 'portrait',
+            putOnlyUsedFonts: true,
+            floatPrecision: 16
         }
     };
     
     // Generate PDF and download
-    html2pdf().from(hallTicket).set(opt).save().then(() => {
+    html2pdf().set(opt).from(hallTicket).save().then(() => {
         downloadSection.style.display = 'flex';
     }).catch((error) => {
         console.error('Error generating PDF:', error);
@@ -1157,27 +1192,22 @@ function addHallTicketContentToPDF(pdf, student) {
     pdf.setLineWidth(2);
     pdf.rect(startX, startY, cardWidth, pageHeight - (margin * 2));
     
-    // Draw diamond border pattern (simplified)
-    pdf.setDrawColor(102, 102, 102);
-    pdf.setLineWidth(0.5);
-    drawDiamondBorderPDF(pdf, startX, startY, cardWidth, pageHeight - (margin * 2));
-    
     let currentY = startY + 15;
     
     // School Header
     pdf.setTextColor(0, 0, 0);
     pdf.setFontSize(16);
-    pdf.setFont('helvetica', 'bold');
+    pdf.setFont('times', 'bold');
     pdf.text(hallTicketConfig.schoolName, pageWidth/2, currentY, { align: 'center' });
     
     currentY += 8;
-    pdf.setFontSize(9);
-    pdf.setFont('helvetica', 'normal');
+    pdf.setFontSize(11);
+    pdf.setFont('times', 'bold');
     pdf.text(hallTicketConfig.schoolSubtitle, pageWidth/2, currentY, { align: 'center' });
     
     currentY += 8;
     pdf.setFontSize(12);
-    pdf.setFont('helvetica', 'bold');
+    pdf.setFont('times', 'bold');
     pdf.text(hallTicketConfig.examTitle, pageWidth/2, currentY, { align: 'center' });
     
     currentY += 15;
@@ -1189,7 +1219,7 @@ function addHallTicketContentToPDF(pdf, student) {
     
     // Student Information
     pdf.setFontSize(10);
-    pdf.setFont('helvetica', 'normal');
+    pdf.setFont('times', 'normal');
     pdf.setTextColor(220, 0, 0); // Red color
     
     const leftX = startX + 10;
@@ -1222,32 +1252,7 @@ function addHallTicketContentToPDF(pdf, student) {
     addSignaturesToPDF(pdf, startX + 10, currentY, cardWidth - 20);
 }
 
-function drawDiamondBorderPDF(pdf, x, y, width, height) {
-    const diamondSize = 3;
-    const spacing = 8;
-    
-    pdf.setFillColor(102, 102, 102);
-    
-    // Top border
-    for (let i = x + spacing; i < x + width - spacing; i += spacing) {
-        pdf.rect(i, y + 2, diamondSize, diamondSize, 'F');
-    }
-    
-    // Bottom border
-    for (let i = x + spacing; i < x + width - spacing; i += spacing) {
-        pdf.rect(i, y + height - 5, diamondSize, diamondSize, 'F');
-    }
-    
-    // Left border
-    for (let i = y + spacing; i < y + height - spacing; i += spacing) {
-        pdf.rect(x + 2, i, diamondSize, diamondSize, 'F');
-    }
-    
-    // Right border
-    for (let i = y + spacing; i < y + height - spacing; i += spacing) {
-        pdf.rect(x + width - 5, i, diamondSize, diamondSize, 'F');
-    }
-}
+
 
 function addMarksTableToPDF(pdf, student, x, y, width) {
     const rowHeight = 8;
@@ -1261,7 +1266,7 @@ function addMarksTableToPDF(pdf, student, x, y, width) {
     pdf.rect(x, currentY, width, rowHeight);
     
     pdf.setFontSize(9);
-    pdf.setFont('helvetica', 'bold');
+    pdf.setFont('times', 'bold');
     
     let currentX = x + 2;
     const headers = ['Subjects', 'Max.Marks', 'Min.Marks', 'Marks Obt.', 'Remark'];
@@ -1275,17 +1280,28 @@ function addMarksTableToPDF(pdf, student, x, y, width) {
     
     currentY += rowHeight;
     
-    // Subject rows
-    const subjects = [
-        { name: hallTicketConfig.subjects.subject1, marks: student.marks.mathematics },
-        { name: hallTicketConfig.subjects.subject2, marks: student.marks.science },
-        { name: hallTicketConfig.subjects.subject3, marks: student.marks.social },
-        { name: hallTicketConfig.subjects.subject4, marks: student.marks.english },
-        { name: hallTicketConfig.subjects.subject5, marks: student.marks.kannada },
-        { name: hallTicketConfig.subjects.subject6, marks: student.marks.hindi }
-    ];
+    // Subject rows - only configured subjects
+    const subjectMarks = {
+        subject1: student.marks.mathematics,
+        subject2: student.marks.science,
+        subject3: student.marks.social,
+        subject4: student.marks.english,
+        subject5: student.marks.kannada,
+        subject6: student.marks.hindi
+    };
     
-    pdf.setFont('helvetica', 'normal');
+    const subjects = [];
+    for (let i = 1; i <= 6; i++) {
+        const subjectName = hallTicketConfig.subjects[`subject${i}`];
+        if (subjectName && subjectName.trim() !== '') {
+            subjects.push({
+                name: subjectName,
+                marks: subjectMarks[`subject${i}`] || 0
+            });
+        }
+    }
+    
+    pdf.setFont('times', 'normal');
     
     subjects.forEach(subject => {
         pdf.rect(x, currentY, width, rowHeight);
@@ -1312,16 +1328,18 @@ function addMarksTableToPDF(pdf, student, x, y, width) {
     
     // Total row
     const totalMarks = subjects.reduce((sum, s) => sum + s.marks, 0);
-    const percentage = ((totalMarks / hallTicketConfig.totalMaxMarks) * 100).toFixed(1);
+    const actualMaxMarks = subjects.length * hallTicketConfig.maxMarks;
+    const actualMinMarks = subjects.length * hallTicketConfig.minMarks;
+    const percentage = actualMaxMarks > 0 ? ((totalMarks / actualMaxMarks) * 100).toFixed(1) : '0.0';
     const grade = getGrade(percentage);
     
     pdf.setFillColor(240, 240, 240);
     pdf.rect(x, currentY, width, rowHeight, 'F');
     pdf.rect(x, currentY, width, rowHeight);
     
-    pdf.setFont('helvetica', 'bold');
+    pdf.setFont('times', 'bold');
     currentX = x + 2;
-    const totalData = ['Total', hallTicketConfig.totalMaxMarks.toString(), hallTicketConfig.totalMinMarks.toString(), totalMarks.toString(), ''];
+    const totalData = ['Total', actualMaxMarks.toString(), actualMinMarks.toString(), totalMarks.toString(), ''];
     totalData.forEach((data, i) => {
         pdf.text(data, currentX, currentY + 5);
         currentX += colWidths[i];
@@ -1353,11 +1371,11 @@ function addMarksTableToPDF(pdf, student, x, y, width) {
 }
 
 function addCoScholasticToPDF(pdf, x, y, width) {
-    pdf.setFont('helvetica', 'bold');
+    pdf.setFont('times', 'bold');
     pdf.setFontSize(10);
     pdf.text('Co-Scholastic Areas', x + width/2, y, { align: 'center' });
     
-    pdf.setFont('helvetica', 'normal');
+    pdf.setFont('times', 'normal');
     pdf.setFontSize(8);
     
     const items = [
@@ -1378,7 +1396,7 @@ function addCoScholasticToPDF(pdf, x, y, width) {
 }
 
 function addSignaturesToPDF(pdf, x, y, width) {
-    pdf.setFont('helvetica', 'bold');
+    pdf.setFont('times', 'bold');
     pdf.setFontSize(9);
     
     const signatures = ['Parent Sign', 'Class Teacher', 'Academic Head'];
@@ -1412,6 +1430,8 @@ function downloadAllHallTickets() {
         
         // Create a container with all hall tickets
         const container = document.createElement('div');
+        container.style.width = '100%';
+        container.style.backgroundColor = '#ffffff';
         
         allHallTickets.forEach((ticket, index) => {
             const ticketClone = ticket.cloneNode(true);
@@ -1423,6 +1443,7 @@ function downloadAllHallTickets() {
             // Add page break after each ticket except the last
             if (index < allHallTickets.length - 1) {
                 ticketClone.style.pageBreakAfter = 'always';
+                ticketClone.style.marginBottom = '20px';
             }
             container.appendChild(ticketClone);
         });
@@ -1431,23 +1452,34 @@ function downloadAllHallTickets() {
         document.body.appendChild(container);
         
         const opt = {
-            margin: [10, 10, 10, 10],
+            margin: [12.7, 12.7, 12.7, 12.7], // 0.5in margins like print
             filename: 'All_Hall_Tickets.pdf',
-            image: { type: 'jpeg', quality: 0.95 },
+            image: { type: 'jpeg', quality: 0.98 },
             html2canvas: { 
-                scale: 2,
+                scale: 1.5,  // Increased for better quality
                 useCORS: true,
+                allowTaint: true,
+                logging: false,
                 letterRendering: true,
-                allowTaint: true
+                backgroundColor: '#ffffff',
+                scrollX: 0,
+                scrollY: 0,
+                width: 900,   // Match hall-ticket max-width from CSS
+                height: 1200, // Proper height for full content
+                x: 0,
+                y: 0
             },
             jsPDF: { 
                 unit: 'mm', 
                 format: 'a4', 
-                orientation: 'portrait' 
-            }
+                orientation: 'portrait',
+                putOnlyUsedFonts: true,
+                floatPrecision: 16
+            },
+            pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
         };
         
-        html2pdf().from(container).set(opt).save().then(() => {
+        html2pdf().set(opt).from(container).save().then(() => {
             // Clean up
             document.body.removeChild(container);
             downloadSections.forEach(section => {

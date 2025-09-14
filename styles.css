@@ -630,20 +630,25 @@ body {
 
 /* Hall Ticket Container */
 .hall-ticket {
-    max-width: 800px;
+    max-width: 900px;  /* Increased from 800px */
+    width: 100%;
     margin: 20px auto;
     background: white;
-    font-family: Arial, sans-serif;
+    font-family: 'Times New Roman', Times, serif;
     page-break-after: always;
+    position: relative;
+    overflow: visible;
 }
 
 /* Diamond Border Frame */
 .diamond-border-frame {
     position: relative;
     background: white;
-    margin: 10px;
-    padding: 20px;
-    border: 3px solid #666;
+    margin: 20px;
+    padding: 30px;
+    border: 3px solid #8B4513;
+    overflow: visible;
+    box-sizing: border-box;
 }
 
 /* Watermark Container */
@@ -654,6 +659,11 @@ body {
     transform: translate(-50%, -50%);
     z-index: 1;
     pointer-events: none;
+    width: 450px;
+    height: 450px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .watermark-logo {
@@ -661,35 +671,12 @@ body {
     height: 450px;
     object-fit: contain;
     opacity: 0.08;
+    max-width: 100%;
+    max-height: 100%;
+    display: block;
 }
 
-/* Diamond Border Pattern */
-.diamond-border-frame::before {
-    content: '';
-    position: absolute;
-    top: -8px;
-    left: -8px;
-    right: -8px;
-    bottom: -8px;
-    background-image: 
-        repeating-linear-gradient(
-            45deg,
-            #666 0px,
-            #666 6px,
-            white 6px,
-            white 12px
-        ),
-        repeating-linear-gradient(
-            -45deg,
-            #666 0px,
-            #666 6px,
-            white 6px,
-            white 12px
-        );
-    background-size: 16.97px 16.97px;
-    z-index: -1;
-    border: 2px solid #666;
-}
+
 
 /* Hall Ticket Header */
 .hall-ticket-header {
@@ -710,7 +697,6 @@ body {
     width: 80px;
     height: 80px;
     object-fit: contain;
-    border: 1px solid #ddd;
     padding: 5px;
 }
 
@@ -728,7 +714,8 @@ body {
 }
 
 .school-subtitle {
-    font-size: 11px;
+    font-size: 13px;
+    font-weight: bold;
     color: #000;
     margin: 0 0 8px 0;
 }
@@ -885,6 +872,21 @@ body {
     border: 1px solid #ccc;
     padding: 2px 5px;
     background-color: #fafafa;
+}
+
+.school-timing-options {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    font-size: 11px;
+    flex-wrap: wrap;
+}
+
+.timing-option {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    white-space: nowrap;
 }
 
 /* Signatures */
@@ -1323,6 +1325,8 @@ body {
 @media print {
     body {
         background: white;
+        margin: 0;
+        padding: 0;
     }
     
     .header-section,
@@ -1333,13 +1337,83 @@ body {
     }
     
     .hall-ticket {
-        margin: 0;
+        max-width: 800px;
+        width: 100%;
+        margin: 0 auto;
+        padding: 20px;
         box-shadow: none;
         page-break-after: always;
+        background: white;
     }
     
     .diamond-border-frame {
-        margin: 0;
+        position: relative;
+        background: white;
+        margin: 10px;
+        padding: 25px;
+        border: none; /* Remove solid border */
+        overflow: visible;
+        box-sizing: border-box;
+    }
+    
+    .diamond-border-frame::before {
+        content: '' !important;
+        position: absolute !important;
+        top: -8px !important;
+        left: -8px !important;
+        width: 8px !important;
+        height: 8px !important;
+        background: #8B4513 !important;
+        transform: rotate(45deg) !important;
+        z-index: -1 !important;
+        box-shadow: 
+            /* Top border diamonds */
+            16px 0 0 #8B4513, 32px 0 0 #8B4513, 48px 0 0 #8B4513, 64px 0 0 #8B4513, 80px 0 0 #8B4513, 96px 0 0 #8B4513, 112px 0 0 #8B4513, 128px 0 0 #8B4513, 144px 0 0 #8B4513, 160px 0 0 #8B4513, 176px 0 0 #8B4513, 192px 0 0 #8B4513, 208px 0 0 #8B4513, 224px 0 0 #8B4513, 240px 0 0 #8B4513, 256px 0 0 #8B4513, 272px 0 0 #8B4513, 288px 0 0 #8B4513, 304px 0 0 #8B4513, 320px 0 0 #8B4513, 336px 0 0 #8B4513, 352px 0 0 #8B4513, 368px 0 0 #8B4513, 384px 0 0 #8B4513, 400px 0 0 #8B4513, 416px 0 0 #8B4513, 432px 0 0 #8B4513, 448px 0 0 #8B4513, 464px 0 0 #8B4513, 480px 0 0 #8B4513, 496px 0 0 #8B4513, 512px 0 0 #8B4513, 528px 0 0 #8B4513, 544px 0 0 #8B4513, 560px 0 0 #8B4513, 576px 0 0 #8B4513, 592px 0 0 #8B4513, 608px 0 0 #8B4513, 624px 0 0 #8B4513, 640px 0 0 #8B4513, 656px 0 0 #8B4513, 672px 0 0 #8B4513, 688px 0 0 #8B4513, 704px 0 0 #8B4513, 720px 0 0 #8B4513, 736px 0 0 #8B4513, 752px 0 0 #8B4513, 768px 0 0 #8B4513, 784px 0 0 #8B4513, 800px 0 0 #8B4513,
+            /* Right border diamonds */
+            800px 16px 0 #8B4513, 800px 32px 0 #8B4513, 800px 48px 0 #8B4513, 800px 64px 0 #8B4513, 800px 80px 0 #8B4513, 800px 96px 0 #8B4513, 800px 112px 0 #8B4513, 800px 128px 0 #8B4513, 800px 144px 0 #8B4513, 800px 160px 0 #8B4513, 800px 176px 0 #8B4513, 800px 192px 0 #8B4513, 800px 208px 0 #8B4513, 800px 224px 0 #8B4513, 800px 240px 0 #8B4513, 800px 256px 0 #8B4513, 800px 272px 0 #8B4513, 800px 288px 0 #8B4513, 800px 304px 0 #8B4513, 800px 320px 0 #8B4513, 800px 336px 0 #8B4513, 800px 352px 0 #8B4513, 800px 368px 0 #8B4513, 800px 384px 0 #8B4513, 800px 400px 0 #8B4513, 800px 416px 0 #8B4513, 800px 432px 0 #8B4513, 800px 448px 0 #8B4513, 800px 464px 0 #8B4513, 800px 480px 0 #8B4513, 800px 496px 0 #8B4513, 800px 512px 0 #8B4513, 800px 528px 0 #8B4513, 800px 544px 0 #8B4513, 800px 560px 0 #8B4513, 800px 576px 0 #8B4513, 800px 592px 0 #8B4513, 800px 608px 0 #8B4513, 800px 624px 0 #8B4513, 800px 640px 0 #8B4513, 800px 656px 0 #8B4513, 800px 672px 0 #8B4513, 800px 688px 0 #8B4513, 800px 704px 0 #8B4513, 800px 720px 0 #8B4513, 800px 736px 0 #8B4513, 800px 752px 0 #8B4513, 800px 768px 0 #8B4513, 800px 784px 0 #8B4513, 800px 800px 0 #8B4513, 800px 816px 0 #8B4513, 800px 832px 0 #8B4513, 800px 848px 0 #8B4513, 800px 864px 0 #8B4513, 800px 880px 0 #8B4513, 800px 896px 0 #8B4513, 800px 912px 0 #8B4513, 800px 928px 0 #8B4513, 800px 944px 0 #8B4513, 800px 960px 0 #8B4513, 800px 976px 0 #8B4513, 800px 992px 0 #8B4513, 800px 1008px 0 #8B4513, 800px 1024px 0 #8B4513, 800px 1040px 0 #8B4513,
+            /* Bottom border diamonds */
+            784px 1040px 0 #8B4513, 768px 1040px 0 #8B4513, 752px 1040px 0 #8B4513, 736px 1040px 0 #8B4513, 720px 1040px 0 #8B4513, 704px 1040px 0 #8B4513, 688px 1040px 0 #8B4513, 672px 1040px 0 #8B4513, 656px 1040px 0 #8B4513, 640px 1040px 0 #8B4513, 624px 1040px 0 #8B4513, 608px 1040px 0 #8B4513, 592px 1040px 0 #8B4513, 576px 1040px 0 #8B4513, 560px 1040px 0 #8B4513, 544px 1040px 0 #8B4513, 528px 1040px 0 #8B4513, 512px 1040px 0 #8B4513, 496px 1040px 0 #8B4513, 480px 1040px 0 #8B4513, 464px 1040px 0 #8B4513, 448px 1040px 0 #8B4513, 432px 1040px 0 #8B4513, 416px 1040px 0 #8B4513, 400px 1040px 0 #8B4513, 384px 1040px 0 #8B4513, 368px 1040px 0 #8B4513, 352px 1040px 0 #8B4513, 336px 1040px 0 #8B4513, 320px 1040px 0 #8B4513, 304px 1040px 0 #8B4513, 288px 1040px 0 #8B4513, 272px 1040px 0 #8B4513, 256px 1040px 0 #8B4513, 240px 1040px 0 #8B4513, 224px 1040px 0 #8B4513, 208px 1040px 0 #8B4513, 192px 1040px 0 #8B4513, 176px 1040px 0 #8B4513, 160px 1040px 0 #8B4513, 144px 1040px 0 #8B4513, 128px 1040px 0 #8B4513, 112px 1040px 0 #8B4513, 96px 1040px 0 #8B4513, 80px 1040px 0 #8B4513, 64px 1040px 0 #8B4513, 48px 1040px 0 #8B4513, 32px 1040px 0 #8B4513, 16px 1040px 0 #8B4513, 0px 1040px 0 #8B4513,
+            /* Left border diamonds */
+            0px 1024px 0 #8B4513, 0px 1008px 0 #8B4513, 0px 992px 0 #8B4513, 0px 976px 0 #8B4513, 0px 960px 0 #8B4513, 0px 944px 0 #8B4513, 0px 928px 0 #8B4513, 0px 912px 0 #8B4513, 0px 896px 0 #8B4513, 0px 880px 0 #8B4513, 0px 864px 0 #8B4513, 0px 848px 0 #8B4513, 0px 832px 0 #8B4513, 0px 816px 0 #8B4513, 0px 800px 0 #8B4513, 0px 784px 0 #8B4513, 0px 768px 0 #8B4513, 0px 752px 0 #8B4513, 0px 736px 0 #8B4513, 0px 720px 0 #8B4513, 0px 704px 0 #8B4513, 0px 688px 0 #8B4513, 0px 672px 0 #8B4513, 0px 656px 0 #8B4513, 0px 640px 0 #8B4513, 0px 624px 0 #8B4513, 0px 608px 0 #8B4513, 0px 592px 0 #8B4513, 0px 576px 0 #8B4513, 0px 560px 0 #8B4513, 0px 544px 0 #8B4513, 0px 528px 0 #8B4513, 0px 512px 0 #8B4513, 0px 496px 0 #8B4513, 0px 480px 0 #8B4513, 0px 464px 0 #8B4513, 0px 448px 0 #8B4513, 0px 432px 0 #8B4513, 0px 416px 0 #8B4513, 0px 400px 0 #8B4513, 0px 384px 0 #8B4513, 0px 368px 0 #8B4513, 0px 352px 0 #8B4513, 0px 336px 0 #8B4513, 0px 320px 0 #8B4513, 0px 304px 0 #8B4513, 0px 288px 0 #8B4513, 0px 272px 0 #8B4513, 0px 256px 0 #8B4513, 0px 240px 0 #8B4513, 0px 224px 0 #8B4513, 0px 208px 0 #8B4513, 0px 192px 0 #8B4513, 0px 176px 0 #8B4513, 0px 160px 0 #8B4513, 0px 144px 0 #8B4513, 0px 128px 0 #8B4513, 0px 112px 0 #8B4513, 0px 96px 0 #8B4513, 0px 80px 0 #8B4513, 0px 64px 0 #8B4513, 0px 48px 0 #8B4513, 0px 32px 0 #8B4513, 0px 16px 0 #8B4513 !important;
+    }
+    
+    .diamond-border-frame::after {
+        content: '' !important;
+        position: absolute !important;
+        top: -8px !important;
+        right: -8px !important;
+        width: 8px !important;
+        height: 8px !important;
+        background: #8B4513 !important;
+        transform: rotate(45deg) !important;
+        z-index: -1 !important;
+        box-shadow: 
+            /* Corner diamonds for visual continuity */
+            0px 1048px 0 #8B4513,   /* bottom-right */
+            -808px 1048px 0 #8B4513, /* bottom-left */
+            -808px 0px 0 #8B4513 !important;    /* top-left */
+    }
+    
+    .watermark-container {
+        position: absolute !important;
+        top: 50% !important;
+        left: 50% !important;
+        transform: translate(-50%, -50%) !important;
+        z-index: 1 !important;
+        width: 450px !important;
+        height: 450px !important;
+    }
+    
+    .watermark-logo {
+        width: 450px !important;
+        height: 450px !important;
+        opacity: 0.08 !important;
+        display: block !important;
+    }
+    
+    @page {
+        margin: 0.5in;
+        size: A4;
     }
 }
 
