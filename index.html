@@ -6,7 +6,7 @@
     <title>Hall Ticket Generator</title>
     <link rel="stylesheet" href="styles.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
 <body>
     <!-- Header Section -->
@@ -357,11 +357,15 @@
         <div class="hall-ticket">
             <!-- Diamond Border Container -->
             <div class="diamond-border-frame">
+                <!-- Watermark Background -->
+                <div class="watermark-container">
+                    <img src="images/logo.jpg" alt="School Logo" class="watermark-logo">
+                </div>
                 
                 <!-- Header Section -->
                 <div class="hall-ticket-header">
                     <div class="school-logo">
-                        <img src="images/logo .jpg" alt="School Logo" class="logo-img">
+                        <img src="images/logo.jpg" alt="School Logo" class="logo-img">
                     </div>
                     <div class="school-info">
                         <h1 class="school-name">GLOBAL'S SANMARG PUBLIC SCHOOL BIDAR</h1>

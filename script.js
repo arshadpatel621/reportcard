@@ -43,11 +43,11 @@ function initializeApp() {
         console.error('❌ XLSX library not loaded!');
     }
     
-    // Check if jsPDF is loaded
-    if (typeof window.jspdf !== 'undefined') {
-        console.log('✅ jsPDF library loaded successfully');
+    // Check if html2pdf is loaded
+    if (typeof html2pdf !== 'undefined') {
+        console.log('✅ html2pdf library loaded successfully');
     } else {
-        console.error('❌ jsPDF library not loaded!');
+        console.error('❌ html2pdf library not loaded!');
     }
     
     // Setup event listeners
@@ -509,10 +509,15 @@ function generateHallTicketHTML(student, index) {
     return `
         <div class="hall-ticket">
             <div class="diamond-border-frame">
+                <!-- Watermark Background -->
+                <div class="watermark-container">
+                    <img src="images/logo.jpg" alt="School Logo" class="watermark-logo">
+                </div>
+                
                 <!-- Header Section -->
                 <div class="hall-ticket-header">
                     <div class="school-logo">
-                        <img src="images/logo .jpg" alt="School Logo" class="logo-img" onerror="this.style.display='none'">
+                        <img src="images/logo.jpg" alt="School Logo" class="logo-img" onerror="this.style.display='none'">
                     </div>
                     <div class="school-info">
                         <h1 class="school-name">${hallTicketConfig.schoolName}</h1>
@@ -800,12 +805,31 @@ function printHallTicket(index) {
                         border: 2px solid #666;
                     }
                     
+                    /* Watermark Container */
+                    .watermark-container {
+                        position: absolute;
+                        top: 50%;
+                        left: 50%;
+                        transform: translate(-50%, -50%);
+                        z-index: 1;
+                        pointer-events: none;
+                    }
+                    
+                    .watermark-logo {
+                        width: 450px;
+                        height: 450px;
+                        object-fit: contain;
+                        opacity: 0.08;
+                    }
+                    
                     .hall-ticket-header {
                         display: flex;
                         align-items: center;
                         margin-bottom: 20px;
                         border-bottom: 2px solid #000;
                         padding-bottom: 15px;
+                        position: relative;
+                        z-index: 2;
                     }
                     
                     .school-logo {
@@ -853,6 +877,8 @@ function printHallTicket(index) {
                         margin-bottom: 20px;
                         padding-bottom: 15px;
                         border-bottom: 1px solid #000;
+                        position: relative;
+                        z-index: 2;
                     }
                     
                     .student-left, .student-right {
@@ -881,6 +907,8 @@ function printHallTicket(index) {
                     
                     .marks-section {
                         margin: 20px 0;
+                        position: relative;
+                        z-index: 2;
                     }
                     
                     .marks-table {
@@ -927,6 +955,8 @@ function printHallTicket(index) {
                         margin: 20px 0;
                         border-top: 1px solid #000;
                         padding-top: 15px;
+                        position: relative;
+                        z-index: 2;
                     }
                     
                     .co-scholastic h3 {
@@ -968,6 +998,8 @@ function printHallTicket(index) {
                         margin-top: 30px;
                         padding-top: 20px;
                         border-top: 1px solid #000;
+                        position: relative;
+                        z-index: 2;
                     }
                     
                     .signature-item {
@@ -1024,46 +1056,92 @@ function printHallTicket(index) {
 }
 
 function viewHallTicket(index) {
-    generateHallTicketPDF(index, true);
-}
-
-function downloadHallTicket(index) {
-    generateHallTicketPDF(index, false);
-}
-
-function generateHallTicketPDF(index, viewOnly = false) {
-    if (!window.jspdf) {
-        alert('PDF library not loaded. Please refresh the page and try again.');
+    const hallTicket = document.querySelectorAll('.hall-ticket')[index];
+    if (!hallTicket) {
+        alert('Hall ticket not found.');
         return;
     }
     
     const student = studentsData[index];
-    if (!student) {
-        alert('Student data not found.');
+    const studentName = student.studentName || 'Student';
+    
+    // Hide download buttons temporarily
+    const downloadSection = hallTicket.querySelector('.download-section');
+    downloadSection.style.display = 'none';
+    
+    // Configure PDF options for viewing
+    const opt = {
+        margin: [10, 10, 10, 10],
+        filename: `HallTicket_${studentName}.pdf`,
+        image: { type: 'jpeg', quality: 0.95 },
+        html2canvas: { 
+            scale: 2,
+            useCORS: true,
+            letterRendering: true,
+            allowTaint: true
+        },
+        jsPDF: { 
+            unit: 'mm', 
+            format: 'a4', 
+            orientation: 'portrait' 
+        }
+    };
+    
+    // Generate PDF and open in new tab for viewing
+    html2pdf().from(hallTicket).set(opt).outputPdf('datauristring').then(function(pdfAsString) {
+        const newTab = window.open();
+        newTab.document.write(`
+            <iframe width='100%' height='100%' src='${pdfAsString}'></iframe>
+        `);
+        newTab.document.title = `Hall Ticket - ${studentName}`;
+        downloadSection.style.display = 'flex';
+    }).catch(() => {
+        alert('Error generating PDF preview. Please try downloading instead.');
+        downloadSection.style.display = 'flex';
+    });
+}
+
+function downloadHallTicket(index) {
+    const hallTicket = document.querySelectorAll('.hall-ticket')[index];
+    if (!hallTicket) {
+        alert('Hall ticket not found.');
         return;
     }
     
-    try {
-        const { jsPDF } = window.jspdf;
-        const pdf = new jsPDF('p', 'mm', 'a4');
-        
-        // Add hall ticket content to PDF
-        addHallTicketContentToPDF(pdf, student);
-        
-        if (viewOnly) {
-            // Open in new tab
-            const blob = pdf.output('blob');
-            const url = URL.createObjectURL(blob);
-            window.open(url, '_blank');
-        } else {
-            // Download
-            const fileName = `HallTicket_${student.studentName.replace(/\s+/g, '_')}_${student.rollNumber}.pdf`;
-            pdf.save(fileName);
+    const student = studentsData[index];
+    const studentName = student.studentName || 'Student';
+    const rollNumber = student.rollNumber || 'RollNo';
+    
+    // Hide download buttons temporarily
+    const downloadSection = hallTicket.querySelector('.download-section');
+    downloadSection.style.display = 'none';
+    
+    // Configure PDF options
+    const opt = {
+        margin: [10, 10, 10, 10],
+        filename: `HallTicket_${studentName.replace(/\s+/g, '_')}_${rollNumber}.pdf`,
+        image: { type: 'jpeg', quality: 0.95 },
+        html2canvas: { 
+            scale: 2,
+            useCORS: true,
+            letterRendering: true,
+            allowTaint: true
+        },
+        jsPDF: { 
+            unit: 'mm', 
+            format: 'a4', 
+            orientation: 'portrait' 
         }
-    } catch (error) {
+    };
+    
+    // Generate PDF and download
+    html2pdf().from(hallTicket).set(opt).save().then(() => {
+        downloadSection.style.display = 'flex';
+    }).catch((error) => {
         console.error('Error generating PDF:', error);
         alert('Error generating PDF. Please try again.');
-    }
+        downloadSection.style.display = 'flex';
+    });
 }
 
 function addHallTicketContentToPDF(pdf, student) {
@@ -1314,29 +1392,80 @@ function addSignaturesToPDF(pdf, x, y, width) {
 }
 
 function downloadAllHallTickets() {
-    if (!window.jspdf) {
-        alert('PDF library not loaded. Please refresh the page and try again.');
-        return;
-    }
-    
     if (!studentsData || studentsData.length === 0) {
         alert('No student data available.');
         return;
     }
     
     try {
-        const { jsPDF } = window.jspdf;
-        const pdf = new jsPDF('p', 'mm', 'a4');
+        const allHallTickets = document.querySelectorAll('.hall-ticket');
+        if (allHallTickets.length === 0) {
+            alert('No hall tickets found. Please generate them first.');
+            return;
+        }
         
-        studentsData.forEach((student, index) => {
-            if (index > 0) {
-                pdf.addPage();
-            }
-            addHallTicketContentToPDF(pdf, student);
+        // Hide all download sections temporarily
+        const downloadSections = document.querySelectorAll('.download-section');
+        downloadSections.forEach(section => {
+            section.style.display = 'none';
         });
         
-        pdf.save('All_Hall_Tickets.pdf');
-        alert(`Successfully generated ${studentsData.length} hall tickets!`);
+        // Create a container with all hall tickets
+        const container = document.createElement('div');
+        
+        allHallTickets.forEach((ticket, index) => {
+            const ticketClone = ticket.cloneNode(true);
+            // Remove download section from clone
+            const downloadSection = ticketClone.querySelector('.download-section');
+            if (downloadSection) {
+                downloadSection.remove();
+            }
+            // Add page break after each ticket except the last
+            if (index < allHallTickets.length - 1) {
+                ticketClone.style.pageBreakAfter = 'always';
+            }
+            container.appendChild(ticketClone);
+        });
+        
+        // Add container to body temporarily
+        document.body.appendChild(container);
+        
+        const opt = {
+            margin: [10, 10, 10, 10],
+            filename: 'All_Hall_Tickets.pdf',
+            image: { type: 'jpeg', quality: 0.95 },
+            html2canvas: { 
+                scale: 2,
+                useCORS: true,
+                letterRendering: true,
+                allowTaint: true
+            },
+            jsPDF: { 
+                unit: 'mm', 
+                format: 'a4', 
+                orientation: 'portrait' 
+            }
+        };
+        
+        html2pdf().from(container).set(opt).save().then(() => {
+            // Clean up
+            document.body.removeChild(container);
+            downloadSections.forEach(section => {
+                section.style.display = 'flex';
+            });
+            alert(`Successfully generated ${studentsData.length} hall tickets!`);
+        }).catch((error) => {
+            console.error('Error generating all PDFs:', error);
+            // Clean up
+            if (document.body.contains(container)) {
+                document.body.removeChild(container);
+            }
+            downloadSections.forEach(section => {
+                section.style.display = 'flex';
+            });
+            alert('Error generating PDFs. Please try again.');
+        });
+        
     } catch (error) {
         console.error('Error generating all PDFs:', error);
         alert('Error generating PDFs. Please try again.');
@@ -1347,7 +1476,7 @@ function downloadAllHallTickets() {
 window.simpleTest = function() {
     console.log('🧪 Running simple test...');
     console.log('XLSX available:', typeof XLSX !== 'undefined');
-    console.log('jsPDF available:', typeof window.jspdf !== 'undefined');
+    console.log('html2pdf available:', typeof html2pdf !== 'undefined');
     
     // Test with sample data including failing marks
     const sampleData = [
